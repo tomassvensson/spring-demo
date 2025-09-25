@@ -12,8 +12,16 @@ permissions:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    env:
+      GRADLE_OPTS: "-Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+      JAVA_TOOL_OPTIONS: "-Djava.net.preferIPv4Stack=true"
     steps:
       - uses: actions/checkout@v4
+      - name: Quick network sanity
+        run: |
+          getent hosts repo1.maven.org || true
+          curl -Is https://repo1.maven.org/maven2/ --max-time 10 || true
+          curl -Is https://services.gradle.org/ --max-time 10 || true
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
