@@ -17,18 +17,16 @@ jobs:
       JAVA_TOOL_OPTIONS: "-Djava.net.preferIPv4Stack=true"
     steps:
       - uses: actions/checkout@v4
-      - name: Quick network sanity
-        run: |
-          getent hosts repo1.maven.org || true
-          curl -Is https://repo1.maven.org/maven2/ --max-time 10 || true
-          curl -Is https://services.gradle.org/ --max-time 10 || true
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
           cache: gradle
-      - uses: gradle/wrapper-validation-action@v2
-      - uses: gradle/gradle-build-action@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: wrapper
+
       - name: Build & Test
         run: ./gradlew --no-daemon clean test jacocoTestReport
       - name: Upload reports (artifact)
